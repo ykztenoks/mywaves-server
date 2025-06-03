@@ -59,16 +59,18 @@ router.post("/signup", async (req, res) => {
 router.post("/login", async (req, res) => {
   try {
     console.log(req.body)
-    const { email, username, password } = req.body
+    const { name, password } = req.body
     //CHECKS IF REQ BODY HAS ALL INFO (email OR username AND password)
-    if (!(email || username) || !password) {
+    if (!name || !password) {
       return res
         .status(400)
         .json({ message: "Please provide email or username, and password" })
     }
 
     //CHECK IF USER EXISTS BY LOOKING FOR THEM THROUGH EMAIL OR USERNAME
-    const user = await User.findOne({ email: email })
+    const user = await User.findOne({
+      $or: [{ email: name }, { username: name }],
+    })
     if (!user) {
       return res.status(401).json({ message: "User does not exist" })
     }
@@ -99,14 +101,14 @@ router.post("/login", async (req, res) => {
       }
     )
 
-    res.json({ user, authToken: jwtToken })
+    res.status(200).json({ user, authToken: jwtToken })
   } catch (error) {
     console.log(error)
     res.status(500).json(error)
   }
 })
 
-router.get("/", isAuth, async (req, res) => {
+router.get("/verify", isAuth, async (req, res) => {
   try {
     return res.status(200).json({ user: req.user })
   } catch (error) {

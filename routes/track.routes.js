@@ -27,7 +27,7 @@ router.post("/", isAuth, async (req, res) => {
 
 router.get("/", async (req, res) => {
   try {
-    const tracks = await Track.find()
+    const tracks = await Track.find().populate("uploadedBy")
 
     return res.status(200).json(tracks)
   } catch (error) {

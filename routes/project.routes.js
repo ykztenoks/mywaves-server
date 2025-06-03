@@ -61,6 +61,9 @@ router.put("/:id", isAuth, isOwnerProject, async (req, res) => {
 router.get("/", async (req, res) => {
   try {
     const projects = await Project.find()
+      .populate("tracks")
+      .populate("creator")
+      .populate({ path: "tracks", populate: { path: "uploadedBy" } })
 
     return res.status(200).json(projects)
   } catch (error) {
@@ -73,6 +76,9 @@ router.get("/:id", async (req, res) => {
   try {
     const { id } = req.params
     const album = await Project.findById(id)
+      .populate("tracks")
+      .populate("creator")
+      .populate({ path: "tracks", populate: { path: "uploadedBy" } })
 
     return res.status(200).json(album)
   } catch (error) {
